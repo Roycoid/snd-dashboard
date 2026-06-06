@@ -5,114 +5,227 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SND AI Trading Dashboard</title>
     <style>
+        /* Desain Tema Gelap ala Trading Terminal */
         body {
+            background-color: #0d1117;
+            color: #c9d1d9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        .dashboard-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
         }
-        h1 {
-            text-align: center;
-            color: #4facfe;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-        }
-        .card {
-            background-color: #1e1e1e;
+        /* Panel Kiri: Laporan Pasar */
+        .panel {
+            background-color: #161b22;
+            border: 1px solid #30363d;
             border-radius: 8px;
             padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            border-left: 5px solid #4facfe;
+            flex: 1;
+            min-width: 300px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
-        .time {
-            font-size: 0.85em;
-            color: #aaaaaa;
-            margin-bottom: 10px;
+        .panel-title {
+            color: #58a6ff;
+            margin-top: 0;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 10px;
         }
-        .symbol {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #fdd835;
+        /* Style Laporan Market */
+        .report-card {
+            background-color: #21262d;
+            border-left: 4px solid #3fb950;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
         }
-        .price {
-            font-size: 1.1em;
-            color: #00e676;
+        .report-price { color: #3fb950; font-weight: bold; font-size: 1.2em;}
+        .report-symbol { color: #f2cc60; font-weight: bold; }
+        
+        /* Style Chatbox */
+        #chat-box {
+            height: 400px;
+            overflow-y: auto;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            padding: 15px;
             margin-bottom: 15px;
         }
-        .analysis {
-            line-height: 1.6;
-            color: #e0e0e0;
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
         }
-        .loading {
-            text-align: center;
-            font-style: italic;
-            color: #888;
+        #chat-input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #30363d;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-size: 14px;
         }
+        #chat-input:focus { outline: none; border-color: #58a6ff; }
+        #send-btn {
+            padding: 12px 20px;
+            background-color: #238636;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        #send-btn:hover { background-color: #2ea043; }
+        
+        /* Bubble Chat */
+        .chat-msg { margin-bottom: 15px; display: flex; flex-direction: column; }
+        .chat-msg.trader { align-items: flex-end; }
+        .chat-msg.ai { align-items: flex-start; }
+        .msg-sender { font-size: 11px; margin-bottom: 4px; font-weight: bold; }
+        .msg-time { font-size: 10px; color: #8b949e; font-weight: normal; margin-left: 5px;}
+        .trader .msg-sender { color: #3fb950; }
+        .ai .msg-sender { color: #58a6ff; }
+        .msg-bubble {
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 85%;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        .trader .msg-bubble { background-color: #1e3a29; color: #e6ffed; border-bottom-right-radius: 0; }
+        .ai .msg-bubble { background-color: #1f2428; color: #c9d1d9; border: 1px solid #30363d; border-bottom-left-radius: 0; }
+        
+        /* Scrollbar kustom */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0d1117; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #58a6ff; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>📊 SND AI Market Report</h1>
+<div class="dashboard-container">
+    <div class="panel">
+        <h2 class="panel-title">📊 Laporan Pasar Live</h2>
         <div id="report-container">
-            <p class="loading">Memuat data dari Firebase...</p>
+            <div style="color: #8b949e; text-align: center; margin-top: 50px;">
+                Menunggu laporan dari MT5...
+            </div>
         </div>
     </div>
 
-    <script>
-        // URL Firebase kamu
-        const FIREBASE_URL = "https://sndfinder-default-rtdb.asia-southeast1.firebasedatabase.app/market_report.json";
-
-        async function loadReports() {
-            try {
-                // Mengambil data dari Firebase
-                const response = await fetch(FIREBASE_URL);
-                const data = await response.json();
-                
-                const container = document.getElementById('report-container');
-                container.innerHTML = ''; // Bersihkan tulisan loading
-
-                if (data) {
-                    // Mengubah data object Firebase menjadi array agar bisa diurutkan
-                    const reportsArray = Object.values(data);
-                    
-                    // Mengurutkan dari yang terbaru ke yang terlama
-                    reportsArray.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-                    // Menampilkan 10 laporan terbaru
-                    reportsArray.slice(0, 10).forEach(report => {
-                        const card = document.createElement('div');
-                        card.className = 'card';
-                        
-                        card.innerHTML = `
-                            <div class="time">🕒 ${report.timestamp}</div>
-                            <div class="symbol">Instrumen: ${report.symbol}</div>
-                            <div class="price">Harga Saat Ini: ${report.price}</div>
-                            <div class="analysis">${report.analysis}</div>
-                        `;
-                        container.appendChild(card);
-                    });
-                } else {
-                    container.innerHTML = '<p class="loading">Belum ada data laporan pasar.</p>';
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                document.getElementById('report-container').innerHTML = '<p class="loading" style="color: red;">Gagal memuat data. Periksa koneksi internet atau URL Firebase.</p>';
-            }
-        }
-
-        // Jalankan fungsi saat halaman dimuat
-        loadReports();
+    <div class="panel">
+        <h2 class="panel-title">💬 Diskusi AI (Gemini)</h2>
+        <div id="chat-box">
+            <div style="color: #8b949e; font-size: 12px; text-align: center; margin-bottom: 20px;">
+                -- Obrolan tersinkronisasi dengan sistem SND V8.5 --
+            </div>
+        </div>
         
-        // Perbarui data otomatis setiap 60 detik
-        setInterval(loadReports, 60000);
-    </script>
+        <div class="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Tanya kondisi market detik ini...">
+            <button id="send-btn">Kirim</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    // 1. Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, set, push, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    // 2. Konfigurasi Firebase Anda
+    // PENTING: Jika Firebase meminta apiKey, masukkan apiKey web Anda di sini. 
+    // Untuk database terbuka (testing), databaseURL biasanya cukup.
+    const firebaseConfig = {
+        databaseURL: "https://sndfinder-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // --- LOGIKA LAPORAN PASAR (Kiri) ---
+    const reportRef = ref(db, 'market_report');
+    const reportContainer = document.getElementById("report-container");
+
+    onValue(reportRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Render kartu laporan
+            reportContainer.innerHTML = `
+                <div class="report-card">
+                    <div style="margin-bottom: 10px; font-size: 12px; color: #8b949e;">🕒 Update: ${data.timestamp}</div>
+                    <div style="margin-bottom: 15px;">
+                        <span class="report-symbol">Instrumen: ${data.symbol}</span><br>
+                        <span class="report-price">Harga Saat Ini: ${data.price}</span>
+                    </div>
+                    <div style="line-height: 1.6; color: #c9d1d9; font-size: 14px;">
+                        ${data.analysis}
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    // --- LOGIKA CHATBOX REAL-TIME (Kanan) ---
+    const chatRef = ref(db, 'discussions');
+    const triggerRef = ref(db, 'web_question');
+    const chatBox = document.getElementById("chat-box");
+    const chatInput = document.getElementById("chat-input");
+    const sendBtn = document.getElementById("send-btn");
+
+    function sendMessage() {
+        const text = chatInput.value.trim();
+        if (text === "") return;
+
+        const now = new Date();
+        const timeString = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
+        // Simpan pesan trader ke database
+        push(chatRef, {
+            sender: "Trader",
+            message: text,
+            timestamp: timeString
+        });
+
+        // Kirim sinyal (trigger) ke EA Slave di MT5 untuk dijawab AI
+        set(triggerRef, { text: text });
+
+        chatInput.value = ""; // Kosongkan form
+    }
+
+    // Klik tombol kirim atau tekan Enter
+    sendBtn.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") sendMessage();
+    });
+
+    // Menerima & merender pesan masuk
+    onChildAdded(chatRef, (snapshot) => {
+        const data = snapshot.val();
+        const msgDiv = document.createElement("div");
+        
+        const isAI = data.sender === "Gemini AI";
+        const msgClass = isAI ? "ai" : "trader";
+        
+        msgDiv.className = `chat-msg ${msgClass}`;
+        msgDiv.innerHTML = `
+            <div class="msg-sender">${data.sender} <span class="msg-time">${data.timestamp}</span></div>
+            <div class="msg-bubble">${data.message}</div>
+        `;
+        
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll bawah
+    });
+</script>
 
 </body>
 </html>
