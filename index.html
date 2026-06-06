@@ -117,7 +117,7 @@
         <h2 class="panel-title">📊 Laporan Pasar Live</h2>
         <div id="report-container">
             <div style="color: #8b949e; text-align: center; margin-top: 50px;">
-                Menunggu laporan dari MT5...
+                Menunggu laporan dari MT5... Klik tombol "✨ Analisa AI" di MT5 Anda.
             </div>
         </div>
     </div>
@@ -142,9 +142,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, push, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // 2. Konfigurasi Firebase Anda
-    // PENTING: Jika Firebase meminta apiKey, masukkan apiKey web Anda di sini. 
-    // Untuk database terbuka (testing), databaseURL biasanya cukup.
+    // 2. Konfigurasi Firebase
     const firebaseConfig = {
         databaseURL: "https://sndfinder-default-rtdb.asia-southeast1.firebasedatabase.app/"
     };
@@ -152,23 +150,28 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- LOGIKA LAPORAN PASAR (Kiri) ---
+    // --- LOGIKA LAPORAN PASAR (Kiri) YANG SUDAH DIPERBAIKI ---
     const reportRef = ref(db, 'market_report');
     const reportContainer = document.getElementById("report-container");
 
     onValue(reportRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
+            // Mengambil data yang paling terakhir/terbaru dari daftar (list)
+            const keys = Object.keys(data);
+            const latestKey = keys[keys.length - 1];
+            const latestData = data[latestKey];
+
             // Render kartu laporan
             reportContainer.innerHTML = `
                 <div class="report-card">
-                    <div style="margin-bottom: 10px; font-size: 12px; color: #8b949e;">🕒 Update: ${data.timestamp}</div>
+                    <div style="margin-bottom: 10px; font-size: 12px; color: #8b949e;">🕒 Update: ${latestData.timestamp}</div>
                     <div style="margin-bottom: 15px;">
-                        <span class="report-symbol">Instrumen: ${data.symbol}</span><br>
-                        <span class="report-price">Harga Saat Ini: ${data.price}</span>
+                        <span class="report-symbol">Instrumen: ${latestData.symbol}</span><br>
+                        <span class="report-price">Harga Saat Ini: ${latestData.price}</span>
                     </div>
                     <div style="line-height: 1.6; color: #c9d1d9; font-size: 14px;">
-                        ${data.analysis}
+                        ${latestData.analysis}
                     </div>
                 </div>
             `;
