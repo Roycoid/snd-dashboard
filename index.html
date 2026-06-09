@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SND AI Trading Dashboard</title>
     <style>
-        /* Desain Tema Gelap ala Trading Terminal */
+        /* Desain Tema Terang Profesional & Bersih */
         body {
-            background-color: #0d1117;
-            color: #c9d1d9;
+            background-color: #f0f2f5;
+            color: #1c1e21;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
@@ -22,40 +22,51 @@
             max-width: 1200px;
             width: 100%;
         }
-        /* Panel Kiri: Laporan Pasar */
+        /* Panel Kiri & Kanan */
         .panel {
-            background-color: #161b22;
-            border: 1px solid #30363d;
+            background-color: #ffffff;
+            border: 1px solid #dddfe2;
             border-radius: 8px;
             padding: 20px;
             flex: 1;
             min-width: 300px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .panel-title {
-            color: #58a6ff;
+            color: #1877f2;
             margin-top: 0;
-            border-bottom: 1px solid #30363d;
+            border-bottom: 2px solid #f0f2f5;
             padding-bottom: 10px;
+            font-size: 1.2rem;
         }
+        
+        /* Container Laporan Pasar dengan Scroll */
+        #report-container {
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 10px; /* Jarak untuk scrollbar */
+        }
+
         /* Style Laporan Market */
         .report-card {
-            background-color: #21262d;
-            border-left: 4px solid #3fb950;
+            background-color: #f7f9fa;
+            border-left: 4px solid #31a24c;
             padding: 15px;
             margin-bottom: 15px;
-            border-radius: 4px;
+            border-radius: 6px;
+            border: 1px solid #e1e4e8;
         }
-        .report-price { color: #3fb950; font-weight: bold; font-size: 1.2em;}
-        .report-symbol { color: #f2cc60; font-weight: bold; }
+        .report-price { color: #31a24c; font-weight: bold; font-size: 1.2em;}
+        .report-symbol { color: #b78a00; font-weight: bold; font-size: 1.1em; }
+        .report-analysis { line-height: 1.6; color: #333; font-size: 14px; white-space: pre-wrap; margin-top: 10px;}
         
         /* Style Chatbox */
         #chat-box {
             height: 400px;
             overflow-y: auto;
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 5px;
+            background-color: #f7f9fa;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
             padding: 15px;
             margin-bottom: 15px;
         }
@@ -66,48 +77,64 @@
         #chat-input {
             flex: 1;
             padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #30363d;
-            background-color: #0d1117;
-            color: #c9d1d9;
+            border-radius: 6px;
+            border: 1px solid #dddfe2;
+            background-color: #ffffff;
+            color: #1c1e21;
             font-size: 14px;
+            transition: border-color 0.2s;
         }
-        #chat-input:focus { outline: none; border-color: #58a6ff; }
+        #chat-input:focus { outline: none; border-color: #1877f2; }
         #send-btn {
             padding: 12px 20px;
-            background-color: #238636;
+            background-color: #31a24c;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             transition: background 0.2s;
         }
-        #send-btn:hover { background-color: #2ea043; }
+        #send-btn:hover { background-color: #2b9043; }
         
         /* Bubble Chat */
         .chat-msg { margin-bottom: 15px; display: flex; flex-direction: column; }
         .chat-msg.trader { align-items: flex-end; }
         .chat-msg.ai { align-items: flex-start; }
         .msg-sender { font-size: 11px; margin-bottom: 4px; font-weight: bold; }
-        .msg-time { font-size: 10px; color: #8b949e; font-weight: normal; margin-left: 5px;}
-        .trader .msg-sender { color: #3fb950; }
-        .ai .msg-sender { color: #58a6ff; }
+        .msg-time { font-size: 10px; color: #65676b; font-weight: normal; margin-left: 5px;}
+        
+        .trader .msg-sender { color: #31a24c; }
+        .ai .msg-sender { color: #1877f2; }
+        
         .msg-bubble {
             padding: 10px 15px;
             border-radius: 8px;
             max-width: 85%;
             line-height: 1.5;
             font-size: 14px;
+            white-space: pre-wrap; /* Kunci agar format paragraf AI tidak rusak */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
-        .trader .msg-bubble { background-color: #1e3a29; color: #e6ffed; border-bottom-right-radius: 0; }
-        .ai .msg-bubble { background-color: #1f2428; color: #c9d1d9; border: 1px solid #30363d; border-bottom-left-radius: 0; }
+        
+        .trader .msg-bubble { 
+            background-color: #e7f3ff; 
+            color: #1c1e21; 
+            border-bottom-right-radius: 0; 
+            border: 1px solid #cce4ff;
+        }
+        .ai .msg-bubble { 
+            background-color: #ffffff; 
+            color: #1c1e21; 
+            border: 1px solid #dddfe2; 
+            border-bottom-left-radius: 0; 
+        }
         
         /* Scrollbar kustom */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0d1117; }
-        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #58a6ff; }
+        ::-webkit-scrollbar-track { background: #f0f2f5; }
+        ::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8d949e; }
     </style>
 </head>
 <body>
@@ -116,7 +143,7 @@
     <div class="panel">
         <h2 class="panel-title">📊 Laporan Pasar Live</h2>
         <div id="report-container">
-            <div style="color: #8b949e; text-align: center; margin-top: 50px;">
+            <div id="waiting-msg" style="color: #65676b; text-align: center; margin-top: 50px;">
                 Menunggu laporan dari MT5... Klik tombol "✨ Analisa AI" di MT5 Anda.
             </div>
         </div>
@@ -125,7 +152,7 @@
     <div class="panel">
         <h2 class="panel-title">💬 Diskusi AI (Gemini)</h2>
         <div id="chat-box">
-            <div style="color: #8b949e; font-size: 12px; text-align: center; margin-bottom: 20px;">
+            <div style="color: #65676b; font-size: 12px; text-align: center; margin-bottom: 20px;">
                 -- Obrolan tersinkronisasi dengan sistem SND V8.5 --
             </div>
         </div>
@@ -138,47 +165,57 @@
 </div>
 
 <script type="module">
-    // 1. Import Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, push, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, set, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // 2. Konfigurasi Firebase
+    // 1. Konfigurasi Firebase (PASTIKAN MENGISI API KEY ANDA)
     const firebaseConfig = {
-        databaseURL: "https://sndfinder-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        apiKey: "ISI_DENGAN_API_KEY_ANDA",
+        authDomain: "sndfinder-default.firebaseapp.com",
+        databaseURL: "https://sndfinder-default-rtdb.asia-southeast1.firebasedatabase.app/",
+        projectId: "sndfinder-default"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- LOGIKA LAPORAN PASAR (Kiri) YANG SUDAH DIPERBAIKI ---
+    // --- LOGIKA LAPORAN PASAR (DENGAN RIWAYAT) ---
     const reportRef = ref(db, 'market_report');
     const reportContainer = document.getElementById("report-container");
+    let isFirstReport = true;
 
-    onValue(reportRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            // Mengambil data yang paling terakhir/terbaru dari daftar (list)
-            const keys = Object.keys(data);
-            const latestKey = keys[keys.length - 1];
-            const latestData = data[latestKey];
-
-            // Render kartu laporan
-            reportContainer.innerHTML = `
-                <div class="report-card">
-                    <div style="margin-bottom: 10px; font-size: 12px; color: #8b949e;">🕒 Update: ${latestData.timestamp}</div>
-                    <div style="margin-bottom: 15px;">
-                        <span class="report-symbol">Instrumen: ${latestData.symbol}</span><br>
-                        <span class="report-price">Harga Saat Ini: ${latestData.price}</span>
-                    </div>
-                    <div style="line-height: 1.6; color: #c9d1d9; font-size: 14px;">
-                        ${latestData.analysis}
-                    </div>
-                </div>
-            `;
+    onChildAdded(reportRef, (snapshot) => {
+        // Hapus teks "Menunggu laporan..." saat data pertama kali masuk
+        if (isFirstReport) {
+            const waitingMsg = document.getElementById("waiting-msg");
+            if (waitingMsg) waitingMsg.remove();
+            isFirstReport = false;
         }
+
+        const data = snapshot.val();
+        
+        // Buat elemen kartu laporan baru
+        const reportDiv = document.createElement("div");
+        reportDiv.className = "report-card";
+        
+        // Struktur HTML kartu
+        reportDiv.innerHTML = `
+            <div style="margin-bottom: 10px; font-size: 12px; color: #65676b;">🕒 Update: ${data.timestamp}</div>
+            <div style="margin-bottom: 15px;">
+                <span class="report-symbol">Instrumen: ${data.symbol}</span><br>
+                <span class="report-price">Harga Saat Ini: ${data.price}</span>
+            </div>
+            <div class="report-analysis"></div>
+        `;
+        
+        // Mencegah XSS pada teks analisis
+        reportDiv.querySelector('.report-analysis').textContent = data.analysis;
+
+        // Tambahkan di paling atas container
+        reportContainer.prepend(reportDiv);
     });
 
-    // --- LOGIKA CHATBOX REAL-TIME (Kanan) ---
+    // --- LOGIKA CHATBOX REAL-TIME ---
     const chatRef = ref(db, 'discussions');
     const triggerRef = ref(db, 'web_question');
     const chatBox = document.getElementById("chat-box");
@@ -192,26 +229,22 @@
         const now = new Date();
         const timeString = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
-        // Simpan pesan trader ke database
         push(chatRef, {
             sender: "Trader",
             message: text,
             timestamp: timeString
         });
 
-        // Kirim sinyal (trigger) ke EA Slave di MT5 untuk dijawab AI
         set(triggerRef, { text: text });
-
-        chatInput.value = ""; // Kosongkan form
+        chatInput.value = ""; 
     }
 
-    // Klik tombol kirim atau tekan Enter
     sendBtn.addEventListener("click", sendMessage);
     chatInput.addEventListener("keypress", function(e) {
         if (e.key === "Enter") sendMessage();
     });
 
-    // Menerima & merender pesan masuk
+    // Menerima & merender pesan masuk dengan perlindungan XSS
     onChildAdded(chatRef, (snapshot) => {
         const data = snapshot.val();
         const msgDiv = document.createElement("div");
@@ -220,13 +253,22 @@
         const msgClass = isAI ? "ai" : "trader";
         
         msgDiv.className = `chat-msg ${msgClass}`;
-        msgDiv.innerHTML = `
-            <div class="msg-sender">${data.sender} <span class="msg-time">${data.timestamp}</span></div>
-            <div class="msg-bubble">${data.message}</div>
-        `;
+        
+        // Buat header pengirim
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "msg-sender";
+        headerDiv.innerHTML = `${data.sender} <span class="msg-time">${data.timestamp}</span>`;
+        
+        // Buat bubble pesan menggunakan textContent
+        const bubbleDiv = document.createElement("div");
+        bubbleDiv.className = "msg-bubble";
+        bubbleDiv.textContent = data.message;
+        
+        msgDiv.appendChild(headerDiv);
+        msgDiv.appendChild(bubbleDiv);
         
         chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll bawah
+        chatBox.scrollTop = chatBox.scrollHeight; 
     });
 </script>
 
