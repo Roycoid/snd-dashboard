@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SND AI Trading Dashboard</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
         /* Desain Tema Terang Profesional & Bersih */
         body {
@@ -58,7 +61,7 @@
         }
         .report-price { color: #31a24c; font-weight: bold; font-size: 1.2em;}
         .report-symbol { color: #b78a00; font-weight: bold; font-size: 1.1em; }
-        .report-analysis { line-height: 1.6; color: #333; font-size: 14px; white-space: pre-wrap; margin-top: 10px;}
+        .report-analysis { line-height: 1.6; color: #333; font-size: 14px; margin-top: 10px;}
         
         /* Style Chatbox */
         #chat-box {
@@ -113,7 +116,6 @@
             max-width: 85%;
             line-height: 1.5;
             font-size: 14px;
-            white-space: pre-wrap; /* Kunci agar format paragraf AI tidak rusak */
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
@@ -122,6 +124,7 @@
             color: #1c1e21; 
             border-bottom-right-radius: 0; 
             border: 1px solid #cce4ff;
+            white-space: pre-wrap; /* Trader menggunakan teks biasa, butuh pre-wrap untuk enter */
         }
         .ai .msg-bubble { 
             background-color: #ffffff; 
@@ -129,6 +132,12 @@
             border: 1px solid #dddfe2; 
             border-bottom-left-radius: 0; 
         }
+
+        /* Perbaikan Format Markdown (Marked.js) di dalam Bubble Chat & Laporan */
+        .msg-bubble p, .report-analysis p { margin: 0 0 10px 0; }
+        .msg-bubble p:last-child, .report-analysis p:last-child { margin-bottom: 0; }
+        .msg-bubble ul, .msg-bubble ol, .report-analysis ul { margin: 0 0 10px 0; padding-left: 20px; }
+        .ai .msg-bubble strong { color: #000000; font-weight: bold; }
         
         /* Scrollbar kustom */
         ::-webkit-scrollbar { width: 8px; }
@@ -179,13 +188,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- LOGIKA LAPORAN PASAR (DENGAN RIWAYAT) ---
+    // --- LOGIKA LAPORAN PASAR (DENGAN RIWAYAT & MARKDOWN) ---
     const reportRef = ref(db, 'market_report');
     const reportContainer = document.getElementById("report-container");
     let isFirstReport = true;
 
     onChildAdded(reportRef, (snapshot) => {
-        // Hapus teks "Menunggu laporan..." saat data pertama kali masuk
         if (isFirstReport) {
             const waitingMsg = document.getElementById("waiting-msg");
             if (waitingMsg) waitingMsg.remove();
@@ -193,12 +201,9 @@
         }
 
         const data = snapshot.val();
-        
-        // Buat elemen kartu laporan baru
         const reportDiv = document.createElement("div");
         reportDiv.className = "report-card";
         
-        // Struktur HTML kartu
         reportDiv.innerHTML = `
             <div style="margin-bottom: 10px; font-size: 12px; color: #65676b;">🕒 Update: ${data.timestamp}</div>
             <div style="margin-bottom: 15px;">
@@ -208,14 +213,14 @@
             <div class="report-analysis"></div>
         `;
         
-        // Mencegah XSS pada teks analisis
-        reportDiv.querySelector('.report-analysis').textContent = data.analysis;
+        // Render Markdown ke HTML untuk area analisis laporan
+        reportDiv.querySelector('.report-analysis').innerHTML = marked.parse(data.analysis);
 
         // Tambahkan di paling atas container
         reportContainer.prepend(reportDiv);
     });
 
-    // --- LOGIKA CHATBOX REAL-TIME ---
+    // --- LOGIKA CHATBOX REAL-TIME (DENGAN MARKDOWN) ---
     const chatRef = ref(db, 'discussions');
     const triggerRef = ref(db, 'web_question');
     const chatBox = document.getElementById("chat-box");
@@ -244,7 +249,6 @@
         if (e.key === "Enter") sendMessage();
     });
 
-    // Menerima & merender pesan masuk dengan perlindungan XSS
     onChildAdded(chatRef, (snapshot) => {
         const data = snapshot.val();
         const msgDiv = document.createElement("div");
@@ -254,15 +258,20 @@
         
         msgDiv.className = `chat-msg ${msgClass}`;
         
-        // Buat header pengirim
         const headerDiv = document.createElement("div");
         headerDiv.className = "msg-sender";
         headerDiv.innerHTML = `${data.sender} <span class="msg-time">${data.timestamp}</span>`;
         
-        // Buat bubble pesan menggunakan textContent
         const bubbleDiv = document.createElement("div");
         bubbleDiv.className = "msg-bubble";
-        bubbleDiv.textContent = data.message;
+        
+        if (isAI) {
+            // Render format Markdown (tebal, list, spasi) dari AI ke HTML
+            bubbleDiv.innerHTML = marked.parse(data.message);
+        } else {
+            // Teks biasa (aman) dari input Trader
+            bubbleDiv.textContent = data.message;
+        }
         
         msgDiv.appendChild(headerDiv);
         msgDiv.appendChild(bubbleDiv);
