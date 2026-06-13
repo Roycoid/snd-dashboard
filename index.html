@@ -21,7 +21,7 @@
             box-sizing: border-box;
         }
         .dashboard-container {
-            max-width: 1400px; /* Area chart sangat lega */
+            max-width: 1500px; /* Sedikit diperlebar agar kolom kanan nyaman dibaca */
             width: 100%;
             height: calc(100vh - 40px);
         }
@@ -58,24 +58,40 @@
             padding-top: 15px;
         }
 
-        /* Style Laporan Market */
+        /* Style Laporan Market Utama */
         .report-card {
             background-color: #f7f9fa;
             border-left: 4px solid #1877f2;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
             border: 1px solid #e1e4e8;
+        }
+        .report-header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e1e4e8;
         }
         .report-price { color: #31a24c; font-weight: bold; font-size: 1.2em;}
         .report-symbol { color: #b78a00; font-weight: bold; font-size: 1.1em; }
-        .report-analysis { line-height: 1.6; color: #333; font-size: 14px; margin-top: 10px;}
+        
+        /* Kotak Teks Analisis (Sebelah Kanan Chart) */
+        .report-analysis { 
+            line-height: 1.6; 
+            color: #333; 
+            font-size: 14px; 
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #dddfe2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            height: fit-content;
+        }
         
         /* =========================================
            WIDGET CHAT MENGAMBANG (FLOATING CHAT)
            ========================================= */
            
-        /* Tombol Buka Chat */
         #chat-toggle-btn {
             position: fixed;
             bottom: 30px;
@@ -100,12 +116,11 @@
             background-color: #166fe5;
         }
 
-        /* Panel Chat (Melayang) */
         .panel-chat {
             position: fixed;
-            bottom: 90px; /* Berada di atas tombol */
+            bottom: 90px; 
             right: 30px;
-            width: 420px; /* Diperbesar sedikit dari sebelumnya */
+            width: 420px; 
             height: 600px;
             max-height: 80vh;
             z-index: 1001;
@@ -115,14 +130,12 @@
             transform: translateY(0);
         }
 
-        /* Class untuk menyembunyikan Chat Panel */
         .panel-chat.hidden {
             opacity: 0;
             transform: translateY(20px);
             pointer-events: none;
         }
 
-        /* Header Chat (Ada tombol Close) */
         .chat-header {
             display: flex;
             justify-content: space-between;
@@ -142,7 +155,6 @@
         }
         #close-chat-btn:hover { color: #dc3545; }
 
-        /* Style Chatbox & Input */
         #chat-box {
             flex: 1;
             overflow-y: auto;
@@ -178,7 +190,6 @@
         }
         #send-btn:hover { background-color: #f0f2f5; }
         
-        /* Bubble Chat */
         .chat-msg { margin-bottom: 12px; display: flex; flex-direction: column; }
         .chat-msg.trader { align-items: flex-end; }
         .chat-msg.ai { align-items: flex-start; }
@@ -273,19 +284,17 @@
     const toggleBtn = document.getElementById('chat-toggle-btn');
     const closeBtn = document.getElementById('close-chat-btn');
 
-    // Fungsi Buka Chat
     toggleBtn.addEventListener('click', () => {
         chatPanel.classList.remove('hidden');
-        toggleBtn.style.display = 'none'; // Sembunyikan tombol saat panel terbuka
+        toggleBtn.style.display = 'none'; 
     });
 
-    // Fungsi Tutup Chat
     closeBtn.addEventListener('click', () => {
         chatPanel.classList.add('hidden');
-        toggleBtn.style.display = 'flex'; // Tampilkan kembali tombol
+        toggleBtn.style.display = 'flex'; 
     });
 
-    // --- LOGIKA LAPORAN PASAR ---
+    // --- LOGIKA LAPORAN PASAR (KOLOM SAMPING-SAMPINGAN) ---
     const reportRef = ref(db, 'market_report');
     const reportContainer = document.getElementById("report-container");
     let isFirstReport = true;
@@ -302,16 +311,24 @@
         reportDiv.className = "report-card";
         
         const imageHtml = data.image_url ? 
-            `<img src="${data.image_url}" alt="Live Chart" style="width: 100%; border-radius: 8px; margin-top: 15px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block;">` 
+            `<img src="${data.image_url}" alt="Live Chart" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block;">` 
             : '';
 
+        // Struktur HTML dengan Flexbox (Kolom Kiri untuk Chart, Kanan untuk Teks)
         reportDiv.innerHTML = `
-            <div style="margin-bottom: 10px; font-size: 12px; color: #65676b;">🕒 Update: ${data.timestamp}</div>
-            <div style="margin-bottom: 15px;">
-                <span class="report-symbol">Instrumen: ${data.symbol}</span><br>
-                <span class="report-price">Harga Saat Ini: ${data.price}</span>
+            <div class="report-header">
+                <div style="font-size: 12px; color: #65676b; margin-bottom: 5px;">🕒 Update: ${data.timestamp}</div>
+                <div>
+                    <span class="report-symbol">Instrumen: ${data.symbol}</span> &nbsp;|&nbsp; 
+                    <span class="report-price">Harga Saat Ini: ${data.price}</span>
+                </div>
             </div>
-            ${imageHtml} <div class="report-analysis"></div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
+                ${data.image_url ? `<div style="flex: 3; min-width: 60%;">${imageHtml}</div>` : ''}
+                
+                <div class="report-analysis" style="flex: 1; min-width: 300px;"></div>
+            </div>
         `;
         
         reportDiv.querySelector('.report-analysis').innerHTML = marked.parse(data.analysis);
