@@ -17,43 +17,59 @@
             padding: 20px;
             display: flex;
             justify-content: center;
+            height: 100vh; /* Memanfaatkan tinggi layar penuh */
+            box-sizing: border-box;
         }
         .dashboard-container {
             display: flex;
-            flex-wrap: wrap;
             gap: 20px;
-            max-width: 1200px;
+            max-width: 1400px; /* Diperlebar agar chart lega */
             width: 100%;
+            height: calc(100vh - 40px); /* Menyesuaikan tinggi layar */
         }
-        /* Panel Kiri & Kanan */
+
+        /* Base Panel */
         .panel {
             background-color: #ffffff;
             border: 1px solid #dddfe2;
             border-radius: 8px;
             padding: 20px;
-            flex: 1;
-            min-width: 300px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
         }
+        
+        /* Panel Kiri: Laporan (Diperbesar) */
+        .panel-report {
+            flex: 1; /* Mengambil semua sisa ruang (mendominasi) */
+            min-width: 60%;
+        }
+
+        /* Panel Kanan: Chat (Diperkecil ala FB) */
+        .panel-chat {
+            width: 350px; /* Lebar tetap / fixed mirip widget chat FB */
+            flex-shrink: 0; 
+        }
+
         .panel-title {
-            color: #1877f2;
+            color: #1877f2; /* Biru FB */
             margin-top: 0;
             border-bottom: 2px solid #f0f2f5;
             padding-bottom: 10px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
         
-        /* Container Laporan Pasar dengan Scroll */
+        /* Container Laporan Pasar */
         #report-container {
-            max-height: 450px;
+            flex: 1; /* Fleksibel mengikuti tinggi panel */
             overflow-y: auto;
-            padding-right: 10px; /* Jarak untuk scrollbar */
+            padding-right: 10px;
         }
 
         /* Style Laporan Market */
         .report-card {
             background-color: #f7f9fa;
-            border-left: 4px solid #31a24c;
+            border-left: 4px solid #1877f2;
             padding: 15px;
             margin-bottom: 15px;
             border-radius: 6px;
@@ -65,83 +81,79 @@
         
         /* Style Chatbox */
         #chat-box {
-            height: 400px;
+            flex: 1; /* Mengisi sisa ruang tinggi panel */
             overflow-y: auto;
-            background-color: #f7f9fa;
-            border: 1px solid #dddfe2;
-            border-radius: 6px;
-            padding: 15px;
+            background-color: #ffffff;
+            padding: 10px;
             margin-bottom: 15px;
         }
         .chat-input-container {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px solid #dddfe2;
         }
         #chat-input {
             flex: 1;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #dddfe2;
-            background-color: #ffffff;
+            padding: 10px 15px;
+            border-radius: 20px; /* Melengkung ala FB */
+            border: 1px solid #ccd0d5;
+            background-color: #f0f2f5;
             color: #1c1e21;
             font-size: 14px;
-            transition: border-color 0.2s;
+            transition: background-color 0.2s;
         }
-        #chat-input:focus { outline: none; border-color: #1877f2; }
+        #chat-input:focus { outline: none; background-color: #ffffff; border-color: #1877f2;}
         #send-btn {
-            padding: 12px 20px;
-            background-color: #31a24c;
-            color: white;
+            padding: 10px 15px;
+            background-color: transparent;
+            color: #1877f2;
             border: none;
-            border-radius: 6px;
+            border-radius: 50%;
             cursor: pointer;
             font-weight: bold;
             transition: background 0.2s;
         }
-        #send-btn:hover { background-color: #2b9043; }
+        #send-btn:hover { background-color: #f0f2f5; }
         
-        /* Bubble Chat */
-        .chat-msg { margin-bottom: 15px; display: flex; flex-direction: column; }
+        /* Bubble Chat ala FB Messenger */
+        .chat-msg { margin-bottom: 12px; display: flex; flex-direction: column; }
         .chat-msg.trader { align-items: flex-end; }
         .chat-msg.ai { align-items: flex-start; }
-        .msg-sender { font-size: 11px; margin-bottom: 4px; font-weight: bold; }
-        .msg-time { font-size: 10px; color: #65676b; font-weight: normal; margin-left: 5px;}
         
-        .trader .msg-sender { color: #31a24c; }
-        .ai .msg-sender { color: #1877f2; }
+        .msg-sender { font-size: 11px; margin-bottom: 4px; font-weight: bold; display: none; /* Disembunyikan agar lebih clean seperti chat biasa */ }
+        .msg-time { font-size: 10px; color: #8a8d91; margin: 2px 4px 0 4px; align-self: center;}
         
         .msg-bubble {
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 18px;
             max-width: 85%;
-            line-height: 1.5;
-            font-size: 14px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            line-height: 1.4;
+            font-size: 13.5px;
         }
         
+        /* Tema FB Messenger */
         .trader .msg-bubble { 
-            background-color: #e7f3ff; 
-            color: #1c1e21; 
-            border-bottom-right-radius: 0; 
-            border: 1px solid #cce4ff;
-            white-space: pre-wrap; /* Trader menggunakan teks biasa, butuh pre-wrap untuk enter */
+            background-color: #0084ff; /* Biru Messenger */
+            color: #ffffff; 
+            border-bottom-right-radius: 4px; 
+            white-space: pre-wrap; 
         }
         .ai .msg-bubble { 
-            background-color: #ffffff; 
-            color: #1c1e21; 
-            border: 1px solid #dddfe2; 
-            border-bottom-left-radius: 0; 
+            background-color: #e4e6eb; /* Abu-abu FB */
+            color: #050505; 
+            border-bottom-left-radius: 4px; 
         }
 
-        /* Perbaikan Format Markdown (Marked.js) di dalam Bubble Chat & Laporan */
-        .msg-bubble p, .report-analysis p { margin: 0 0 10px 0; }
+        /* Perbaikan Format Markdown (Marked.js) */
+        .msg-bubble p, .report-analysis p { margin: 0 0 8px 0; }
         .msg-bubble p:last-child, .report-analysis p:last-child { margin-bottom: 0; }
         .msg-bubble ul, .msg-bubble ol, .report-analysis ul { margin: 0 0 10px 0; padding-left: 20px; }
         .ai .msg-bubble strong { color: #000000; font-weight: bold; }
         
         /* Scrollbar kustom */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f0f2f5; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #8d949e; }
     </style>
@@ -149,7 +161,7 @@
 <body>
 
 <div class="dashboard-container">
-    <div class="panel">
+    <div class="panel panel-report">
         <h2 class="panel-title">📊 Laporan Pasar Live</h2>
         <div id="report-container">
             <div id="waiting-msg" style="color: #65676b; text-align: center; margin-top: 50px;">
@@ -158,16 +170,16 @@
         </div>
     </div>
 
-    <div class="panel">
-        <h2 class="panel-title">💬 Diskusi AI (Gemini)</h2>
+    <div class="panel panel-chat">
+        <h2 class="panel-title">💬 Diskusi AI</h2>
         <div id="chat-box">
-            <div style="color: #65676b; font-size: 12px; text-align: center; margin-bottom: 20px;">
-                -- Obrolan tersinkronisasi dengan sistem SND V8.5 --
+            <div style="color: #8a8d91; font-size: 11px; text-align: center; margin-bottom: 15px;">
+                Tersinkronisasi dengan sistem SND V8.5
             </div>
         </div>
         
         <div class="chat-input-container">
-            <input type="text" id="chat-input" placeholder="Tanya kondisi market detik ini...">
+            <input type="text" id="chat-input" placeholder="Tulis pesan...">
             <button id="send-btn">Kirim</button>
         </div>
     </div>
