@@ -188,7 +188,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- LOGIKA LAPORAN PASAR (DENGAN RIWAYAT & MARKDOWN) ---
+    // --- LOGIKA LAPORAN PASAR (DENGAN RIWAYAT, GAMBAR & MARKDOWN) ---
     const reportRef = ref(db, 'market_report');
     const reportContainer = document.getElementById("report-container");
     let isFirstReport = true;
@@ -204,13 +204,18 @@
         const reportDiv = document.createElement("div");
         reportDiv.className = "report-card";
         
+        // Buat tag img hanya jika image_url tersedia dari Firebase
+        const imageHtml = data.image_url ? 
+            `<img src="${data.image_url}" alt="Live Chart" style="width: 100%; border-radius: 8px; margin-top: 15px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block;">` 
+            : '';
+
         reportDiv.innerHTML = `
             <div style="margin-bottom: 10px; font-size: 12px; color: #65676b;">🕒 Update: ${data.timestamp}</div>
             <div style="margin-bottom: 15px;">
                 <span class="report-symbol">Instrumen: ${data.symbol}</span><br>
                 <span class="report-price">Harga Saat Ini: ${data.price}</span>
             </div>
-            <div class="report-analysis"></div>
+            ${imageHtml} <div class="report-analysis"></div>
         `;
         
         // Render Markdown ke HTML untuk area analisis laporan
