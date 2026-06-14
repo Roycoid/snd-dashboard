@@ -330,12 +330,16 @@
     import { getDatabase, ref, set, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    // 1. Konfigurasi Firebase (SUDAH DIPERBAIKI SESUAI PROYEK ANDA)
+    // 1. Konfigurasi Firebase Anda yang 100% Benar
     const firebaseConfig = {
-        apiKey: "AIzaSyDXMd_dCKGgg5HyfwpnVAZHliBQHlr0BaE",
-        authDomain: "sndfinder.firebaseapp.com",
-        databaseURL: "https://sndfinder-rtdb.asia-southeast1.firebasedatabase.app/",
-        projectId: "sndfinder"
+      apiKey: "AIzaSyB7pBQh1_yIBBucfiGNJqn6Kn9SrNZu7rE",
+      authDomain: "sndfinder.firebaseapp.com",
+      databaseURL: "https://sndfinder-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "sndfinder",
+      storageBucket: "sndfinder.firebasestorage.app",
+      messagingSenderId: "487128628698",
+      appId: "1:487128628698:web:b21eda0312f24af20f54e3",
+      measurementId: "G-CRXFBJGVCF"
     };
 
     const app = initializeApp(firebaseConfig);
