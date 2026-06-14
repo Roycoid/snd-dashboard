@@ -3,396 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SND AI Trading Dashboard</title>
-    
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
+    <title>SND AI Dashboard</title>
     <style>
-        /* Desain Tema Terang Profesional & Bersih */
+        /* Gaya Tampilan Dasar */
         body {
-            background-color: #f0f2f5;
-            color: #1c1e21;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             justify-content: center;
+            align-items: center;
             height: 100vh;
-            box-sizing: border-box;
         }
-        .dashboard-container {
-            max-width: 1500px; /* Sedikit diperlebar agar kolom kanan nyaman dibaca */
+
+        /* Tampilan Kotak Login */
+        #login-section {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 350px;
+        }
+        #login-section h2 { margin-bottom: 5px; color: #1a73e8; }
+        #login-section p { font-size: 12px; color: #666; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group input {
             width: 100%;
-            height: calc(100vh - 40px);
-        }
-
-        /* Base Panel */
-        .panel {
-            background-color: #ffffff;
-            border: 1px solid #dddfe2;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Panel Kiri: Laporan (Sekarang Full Width & Full Height) */
-        .panel-report {
-            height: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
             box-sizing: border-box;
+            background-color: #e8f0fe;
         }
-
-        .panel-title {
-            color: #1877f2;
-            margin-top: 0;
-            font-size: 1.1rem;
-        }
-        
-        /* Container Laporan Pasar */
-        #report-container {
-            flex: 1; 
-            overflow-y: auto;
-            padding-right: 10px;
-            border-top: 2px solid #f0f2f5;
-            padding-top: 15px;
-        }
-
-        /* Style Laporan Market Utama */
-        .report-card {
-            background-color: #f7f9fa;
-            border-left: 4px solid #1877f2;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            border: 1px solid #e1e4e8;
-        }
-        .report-header {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e1e4e8;
-        }
-        .report-price { color: #31a24c; font-weight: bold; font-size: 1.2em;}
-        .report-symbol { color: #b78a00; font-weight: bold; font-size: 1.1em; }
-        
-        /* Kotak Teks Analisis (Sebelah Kanan Chart) */
-        .report-analysis { 
-            line-height: 1.6; 
-            color: #333; 
-            font-size: 14px; 
-            background-color: #ffffff;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #dddfe2;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-            height: fit-content;
-        }
-        
-        /* =========================================
-           WIDGET CHAT MENGAMBANG (FLOATING CHAT)
-           ========================================= */
-           
-        #chat-toggle-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: #1877f2;
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #1a73e8;
             color: white;
             border: none;
-            border-radius: 50px;
-            padding: 15px 25px;
-            font-size: 16px;
+            border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 1000;
-            transition: transform 0.2s, background-color 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        #chat-toggle-btn:hover {
-            transform: scale(1.05);
-            background-color: #166fe5;
-        }
-
-        .panel-chat {
-            position: fixed;
-            bottom: 90px; 
-            right: 30px;
-            width: 420px; 
-            height: 600px;
-            max-height: 80vh;
-            z-index: 1001;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .panel-chat.hidden {
-            opacity: 0;
-            transform: translateY(20px);
-            pointer-events: none;
-        }
-
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #f0f2f5;
-            padding-bottom: 10px;
-            margin-bottom: 5px;
-        }
-        .chat-header h2 { margin: 0; border: none; padding: 0; }
-        #close-chat-btn {
-            background: transparent;
-            border: none;
-            font-size: 24px;
-            color: #8a8d91;
-            cursor: pointer;
-            line-height: 1;
-        }
-        #close-chat-btn:hover { color: #dc3545; }
-
-        #chat-box {
-            flex: 1;
-            overflow-y: auto;
-            background-color: #ffffff;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        .chat-input-container {
-            display: flex;
-            gap: 8px;
-            padding-top: 10px;
-            border-top: 1px solid #dddfe2;
-        }
-        #chat-input {
-            flex: 1;
-            padding: 10px 15px;
-            border-radius: 20px;
-            border: 1px solid #ccd0d5;
-            background-color: #f0f2f5;
-            color: #1c1e21;
             font-size: 14px;
-            transition: background-color 0.2s;
         }
-        #chat-input:focus { outline: none; background-color: #ffffff; border-color: #1877f2;}
-        #send-btn {
-            padding: 10px 15px;
-            background-color: transparent;
-            color: #1877f2;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
+        .btn-login:hover { background-color: #1557b0; }
+        #error-msg {
+            color: red;
+            font-size: 12px;
+            margin-top: 15px;
             font-weight: bold;
-        }
-        #send-btn:hover { background-color: #f0f2f5; }
-        
-        .chat-msg { margin-bottom: 12px; display: flex; flex-direction: column; }
-        .chat-msg.trader { align-items: flex-end; }
-        .chat-msg.ai { align-items: flex-start; }
-        
-        .msg-sender { display: none; }
-        .msg-time { font-size: 10px; color: #8a8d91; margin: 2px 4px 0 4px; align-self: center;}
-        
-        .msg-bubble {
-            padding: 8px 12px;
-            border-radius: 18px;
-            max-width: 85%;
-            line-height: 1.4;
-            font-size: 13.5px;
-        }
-        
-        .trader .msg-bubble { 
-            background-color: #0084ff; 
-            color: #ffffff; 
-            border-bottom-right-radius: 4px; 
-            white-space: pre-wrap; 
-        }
-        .ai .msg-bubble { 
-            background-color: #e4e6eb; 
-            color: #050505; 
-            border-bottom-left-radius: 4px; 
+            display: none;
         }
 
-        .msg-bubble p, .report-analysis p { margin: 0 0 8px 0; }
-        .msg-bubble p:last-child, .report-analysis p:last-child { margin-bottom: 0; }
-        .msg-bubble ul, .msg-bubble ol, .report-analysis ul { margin: 0 0 10px 0; padding-left: 20px; }
-        .ai .msg-bubble strong { color: #000000; font-weight: bold; }
+        /* Tampilan Dashboard Utama (Disembunyikan di awal) */
+        #dashboard-section {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            background-color: #ffffff;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f4f6f9; padding-bottom: 10px; }
+        .header h1 { color: #333; margin: 0; }
+        .btn-logout { background-color: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
         
-        /* Scrollbar kustom */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #8d949e; }
+        .content { margin-top: 30px; text-align: center; }
+        .btn-ai {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-ai:hover { background-color: #218838; }
+
+        /* Tombol Chat Mengambang */
+        .floating-chat {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #1a73e8;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
 
-<div class="dashboard-container">
-    <div class="panel panel-report">
-        <h2 class="panel-title">📊 Laporan Pasar Live</h2>
-        <div id="report-container">
-            <div id="waiting-msg" style="color: #65676b; text-align: center; margin-top: 50px;">
-                Menunggu laporan dari MT5... Klik tombol "✨ Analisa AI" di MT5 Anda.
-            </div>
-        </div>
-    </div>
-</div>
-
-<button id="chat-toggle-btn">
-    <span style="font-size: 20px;">💬</span> Diskusi AI
-</button>
-
-<div class="panel panel-chat hidden" id="chat-panel">
-    <div class="chat-header">
-        <h2 class="panel-title">💬 Diskusi AI</h2>
-        <button id="close-chat-btn">×</button>
-    </div>
-    
-    <div id="chat-box">
-        <div style="color: #8a8d91; font-size: 11px; text-align: center; margin-bottom: 15px;">
-            Tersinkronisasi dengan sistem SND V8.5
-        </div>
-    </div>
-    
-    <div class="chat-input-container">
-        <input type="text" id="chat-input" placeholder="Tulis pesan...">
-        <button id="send-btn">Kirim</button>
-    </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-    // 1. Konfigurasi Firebase (PASTIKAN MENGISI API KEY ANDA)
-    const firebaseConfig = {
-        apiKey: "ISI_DENGAN_API_KEY_ANDA",
-        authDomain: "sndfinder-default.firebaseapp.com",
-        databaseURL: "https://sndfinder-default-rtdb.asia-southeast1.firebasedatabase.app/",
-        projectId: "sndfinder-default"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // --- LOGIKA TOGGLE BUKA/TUTUP CHAT ---
-    const chatPanel = document.getElementById('chat-panel');
-    const toggleBtn = document.getElementById('chat-toggle-btn');
-    const closeBtn = document.getElementById('close-chat-btn');
-
-    toggleBtn.addEventListener('click', () => {
-        chatPanel.classList.remove('hidden');
-        toggleBtn.style.display = 'none'; 
-    });
-
-    closeBtn.addEventListener('click', () => {
-        chatPanel.classList.add('hidden');
-        toggleBtn.style.display = 'flex'; 
-    });
-
-    // --- LOGIKA LAPORAN PASAR (KOLOM SAMPING-SAMPINGAN) ---
-    const reportRef = ref(db, 'market_report');
-    const reportContainer = document.getElementById("report-container");
-    let isFirstReport = true;
-
-    onChildAdded(reportRef, (snapshot) => {
-        if (isFirstReport) {
-            const waitingMsg = document.getElementById("waiting-msg");
-            if (waitingMsg) waitingMsg.remove();
-            isFirstReport = false;
-        }
-
-        const data = snapshot.val();
-        const reportDiv = document.createElement("div");
-        reportDiv.className = "report-card";
+    <!-- KOTAK LOGIN -->
+    <div id="login-section">
+        <h2>🔒 SND AI Login</h2>
+        <p>Akses khusus administrator (Private)</p>
         
-        const imageHtml = data.image_url ? 
-            `<img src="${data.image_url}" alt="Live Chart" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block;">` 
-            : '';
-
-        // Struktur HTML dengan Flexbox (Kolom Kiri untuk Chart, Kanan untuk Teks)
-        reportDiv.innerHTML = `
-            <div class="report-header">
-                <div style="font-size: 12px; color: #65676b; margin-bottom: 5px;">🕒 Update: ${data.timestamp}</div>
-                <div>
-                    <span class="report-symbol">Instrumen: ${data.symbol}</span> &nbsp;|&nbsp; 
-                    <span class="report-price">Harga Saat Ini: ${data.price}</span>
-                </div>
-            </div>
-            
-            <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
-                ${data.image_url ? `<div style="flex: 3; min-width: 60%;">${imageHtml}</div>` : ''}
-                
-                <div class="report-analysis" style="flex: 1; min-width: 300px;"></div>
-            </div>
-        `;
+        <div class="input-group">
+            <input type="email" id="email" placeholder="Masukkan Email Anda">
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Masukkan Kata Sandi">
+        </div>
         
-        reportDiv.querySelector('.report-analysis').innerHTML = marked.parse(data.analysis);
-        reportContainer.prepend(reportDiv);
-    });
+        <button class="btn-login" id="btn-login">Masuk ke Dashboard</button>
+        <p id="error-msg">Akses Ditolak: Email atau sandi salah!</p>
+    </div>
 
-    // --- LOGIKA CHATBOX REAL-TIME ---
-    const chatRef = ref(db, 'discussions');
-    const triggerRef = ref(db, 'web_question');
-    const chatBox = document.getElementById("chat-box");
-    const chatInput = document.getElementById("chat-input");
-    const sendBtn = document.getElementById("send-btn");
+    <!-- DASHBOARD UTAMA -->
+    <div id="dashboard-section">
+        <div class="header">
+            <h1>SND Dashboard V8.5</h1>
+            <button class="btn-logout" id="btn-logout">Keluar (Logout)</button>
+        </div>
+        
+        <div class="content">
+            <h2>Selamat Datang, Admin VIP!</h2>
+            <p>Sistem Firebase Anda sudah terhubung dengan sempurna.</p>
+            <br>
+            <button class="btn-ai" id="btn-ai">✨ Analisa AI (Tarik Data MT5)</button>
+        </div>
 
-    function sendMessage() {
-        const text = chatInput.value.trim();
-        if (text === "") return;
+        <div class="floating-chat">💬</div>
+    </div>
 
-        const now = new Date();
-        const timeString = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+    <!-- SCRIPT FIREBASE -->
+    <script type="module">
+        // 1. Import library Firebase langsung dari server Google (tanpa NPM)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-        push(chatRef, {
-            sender: "Trader",
-            message: text,
-            timestamp: timeString
+        // 2. KUNCI RAHASIA FIREBASE ANDA
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7pBQh1_yIBBucfiGNJqn6Kn9SrNZu7rE",
+            authDomain: "sndfinder.firebaseapp.com",
+            databaseURL: "https://sndfinder-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "sndfinder",
+            storageBucket: "sndfinder.firebasestorage.app",
+            messagingSenderId: "487128628698",
+            appId: "1:487128628698:web:b21eda0312f24af20f54e3",
+            measurementId: "G-CRXFBJGVCF"
+        };
+
+        // 3. Menghidupkan Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // 4. Hubungkan elemen HTML ke Javascript
+        const loginSection = document.getElementById('login-section');
+        const dashboardSection = document.getElementById('dashboard-section');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const errorMsg = document.getElementById('error-msg');
+
+        // 5. Cek apakah pengguna sudah login atau belum
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Jika sudah login, sembunyikan kotak login, tampilkan dashboard
+                loginSection.style.display = 'none';
+                dashboardSection.style.display = 'block';
+                // Reset body style agar dashboard berada di atas
+                document.body.style.display = 'block'; 
+                document.body.style.height = 'auto';
+            } else {
+                // Jika belum login, tampilkan kotak login
+                loginSection.style.display = 'block';
+                dashboardSection.style.display = 'none';
+                document.body.style.display = 'flex';
+                document.body.style.height = '100vh';
+            }
         });
 
-        set(triggerRef, { text: text });
-        chatInput.value = ""; 
-    }
+        // 6. Fungsi tombol Login ditekan
+        btnLogin.addEventListener('click', () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            // Sembunyikan pesan error sebelumnya
+            errorMsg.style.display = 'none';
+            btnLogin.innerText = 'Memeriksa...';
 
-    sendBtn.addEventListener("click", sendMessage);
-    chatInput.addEventListener("keypress", function(e) {
-        if (e.key === "Enter") sendMessage();
-    });
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Berhasil masuk
+                    btnLogin.innerText = 'Masuk ke Dashboard';
+                })
+                .catch((error) => {
+                    // Gagal masuk (Sandi/Email salah)
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = "Error: " + error.message;
+                    btnLogin.innerText = 'Masuk ke Dashboard';
+                });
+        });
 
-    onChildAdded(chatRef, (snapshot) => {
-        const data = snapshot.val();
-        const msgDiv = document.createElement("div");
-        
-        const isAI = data.sender === "Gemini AI";
-        const msgClass = isAI ? "ai" : "trader";
-        
-        msgDiv.className = `chat-msg ${msgClass}`;
-        
-        const bubbleDiv = document.createElement("div");
-        bubbleDiv.className = "msg-bubble";
-        
-        if (isAI) {
-            bubbleDiv.innerHTML = marked.parse(data.message);
-        } else {
-            bubbleDiv.textContent = data.message;
-        }
-        
-        msgDiv.appendChild(bubbleDiv);
-        
-        const timeDiv = document.createElement("div");
-        timeDiv.className = "msg-time";
-        timeDiv.textContent = data.timestamp;
-        msgDiv.appendChild(timeDiv);
-        
-        chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight; 
-    });
-</script>
+        // 7. Fungsi tombol Logout ditekan
+        btnLogout.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                // Bersihkan isian login setelah keluar
+                emailInput.value = '';
+                passwordInput.value = '';
+            });
+        });
 
+        // 8. Fungsi dummy tombol AI (Bisa Anda kembangkan nanti)
+        document.getElementById('btn-ai').addEventListener('click', () => {
+            alert('Perintah dikirim ke MetaTrader 5! Sedang memuat Analisa AI...');
+        });
+    </script>
 </body>
-</html>  
+</html>
