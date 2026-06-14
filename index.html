@@ -14,14 +14,62 @@
             color: #1c1e21;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
+            padding: 0; /* Ubah padding agar full window untuk login screen */
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* =========================================
+           TAMBAHAN: STYLE LOGIN & LOGOUT
+           ========================================= */
+        #login-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            background-color: #f0f2f5;
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 320px;
+            text-align: center;
+        }
+        .login-box h2 { color: #1877f2; margin-top: 0; }
+        .login-box input {
+            width: 100%; box-sizing: border-box; padding: 12px; margin: 10px 0;
+            border: 1px solid #ccc; border-radius: 6px; font-size: 14px;
+        }
+        .login-box button {
+            width: 100%; padding: 12px; background-color: #1877f2; color: white;
+            border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer;
+            margin-top: 10px; transition: background-color 0.2s;
+        }
+        .login-box button:hover { background-color: #166fe5; }
+        .error-msg { color: #dc3545; font-size: 13px; display: none; margin-top: 10px; font-weight: bold;}
+        
+        #logout-btn {
+            position: fixed; top: 15px; right: 20px; background: #dc3545; color: white;
+            border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; z-index: 999; font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        #logout-btn:hover { background: #c82333; }
+
+        /* ========================================= */
+
+        #dashboard-area {
             padding: 20px;
             display: flex;
             justify-content: center;
             height: 100vh;
             box-sizing: border-box;
         }
+
         .dashboard-container {
-            max-width: 1500px; /* Sedikit diperlebar agar kolom kanan nyaman dibaca */
+            max-width: 1500px; 
             width: 100%;
             height: calc(100vh - 40px);
         }
@@ -37,7 +85,7 @@
             flex-direction: column;
         }
         
-        /* Panel Kiri: Laporan (Sekarang Full Width & Full Height) */
+        /* Panel Kiri: Laporan */
         .panel-report {
             height: 100%;
             box-sizing: border-box;
@@ -75,7 +123,7 @@
         .report-price { color: #31a24c; font-weight: bold; font-size: 1.2em;}
         .report-symbol { color: #b78a00; font-weight: bold; font-size: 1.1em; }
         
-        /* Kotak Teks Analisis (Sebelah Kanan Chart) */
+        /* Kotak Teks Analisis */
         .report-analysis { 
             line-height: 1.6; 
             color: #333; 
@@ -88,10 +136,7 @@
             height: fit-content;
         }
         
-        /* =========================================
-           WIDGET CHAT MENGAMBANG (FLOATING CHAT)
-           ========================================= */
-           
+        /* Widget Chat */
         #chat-toggle-btn {
             position: fixed;
             bottom: 30px;
@@ -231,42 +276,59 @@
 </head>
 <body>
 
-<div class="dashboard-container">
-    <div class="panel panel-report">
-        <h2 class="panel-title">📊 Laporan Pasar Live</h2>
-        <div id="report-container">
-            <div id="waiting-msg" style="color: #65676b; text-align: center; margin-top: 50px;">
-                Menunggu laporan dari MT5... Klik tombol "✨ Analisa AI" di MT5 Anda.
-            </div>
-        </div>
+<div id="login-area">
+    <div class="login-box">
+        <h2>🔐 SND AI Login</h2>
+        <p style="font-size: 13px; color: #65676b;">Akses khusus administrator (Private)</p>
+        <input type="email" id="login-email" placeholder="Email Terdaftar">
+        <input type="password" id="login-password" placeholder="Password Rahasia">
+        <button id="do-login-btn">Masuk ke Dashboard</button>
+        <p id="login-error-msg" class="error-msg">Akses Ditolak: Email atau sandi salah!</p>
     </div>
 </div>
 
-<button id="chat-toggle-btn">
-    <span style="font-size: 20px;">💬</span> Diskusi AI
-</button>
+<div id="dashboard-area" style="display: none;">
+    <button id="logout-btn">Keluar (Logout)</button>
 
-<div class="panel panel-chat hidden" id="chat-panel">
-    <div class="chat-header">
-        <h2 class="panel-title">💬 Diskusi AI</h2>
-        <button id="close-chat-btn">×</button>
-    </div>
-    
-    <div id="chat-box">
-        <div style="color: #8a8d91; font-size: 11px; text-align: center; margin-bottom: 15px;">
-            Tersinkronisasi dengan sistem SND V8.5
+    <div class="dashboard-container">
+        <div class="panel panel-report">
+            <h2 class="panel-title">📊 Laporan Pasar Live</h2>
+            <div id="report-container">
+                <div id="waiting-msg" style="color: #65676b; text-align: center; margin-top: 50px;">
+                    Menunggu laporan dari MT5... Klik tombol "✨ Analisa AI" di MT5 Anda.
+                </div>
+            </div>
         </div>
     </div>
-    
-    <div class="chat-input-container">
-        <input type="text" id="chat-input" placeholder="Tulis pesan...">
-        <button id="send-btn">Kirim</button>
+
+    <button id="chat-toggle-btn">
+        <span style="font-size: 20px;">💬</span> Diskusi AI
+    </button>
+
+    <div class="panel panel-chat hidden" id="chat-panel">
+        <div class="chat-header">
+            <h2 class="panel-title">💬 Diskusi AI</h2>
+            <button id="close-chat-btn">×</button>
+        </div>
+        
+        <div id="chat-box">
+            <div style="color: #8a8d91; font-size: 11px; text-align: center; margin-bottom: 15px;">
+                Tersinkronisasi dengan sistem SND V8.5
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Tulis pesan...">
+            <button id="send-btn">Kirim</button>
+        </div>
     </div>
 </div>
 
 <script type="module">
+    // Import Modul Realtime Database & Authentication Firebase v10
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
     // 1. Konfigurasi Firebase (PASTIKAN MENGISI API KEY ANDA)
     const firebaseConfig = {
@@ -278,6 +340,50 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app); // Inisialisasi Fitur Auth
+
+    // --- LOGIKA AUTENTIKASI (LOGIN & LOGOUT) ---
+    const loginArea = document.getElementById("login-area");
+    const dashboardArea = document.getElementById("dashboard-area");
+    const errorMsg = document.getElementById("login-error-msg");
+
+    // Pengamat Status Login Real-time
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Jika sudah login, hilangkan kotak login dan tampilkan dashboard
+            loginArea.style.display = "none";
+            dashboardArea.style.display = "flex";
+        } else {
+            // Jika belum login, cegat di halaman login
+            loginArea.style.display = "flex";
+            dashboardArea.style.display = "none";
+        }
+    });
+
+    // Eksekusi Tombol Login
+    document.getElementById("do-login-btn").addEventListener("click", () => {
+        const emailVal = document.getElementById("login-email").value;
+        const passVal = document.getElementById("login-password").value;
+        
+        signInWithEmailAndPassword(auth, emailVal, passVal)
+            .then(() => {
+                errorMsg.style.display = "none"; // Sukses masuk
+            })
+            .catch((error) => {
+                errorMsg.style.display = "block"; // Gagal masuk
+                console.error(error.message);
+            });
+    });
+
+    // Login cepat dengan tombol "Enter" di kotak password
+    document.getElementById("login-password").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") document.getElementById("do-login-btn").click();
+    });
+
+    // Eksekusi Tombol Logout
+    document.getElementById("logout-btn").addEventListener("click", () => {
+        signOut(auth);
+    });
 
     // --- LOGIKA TOGGLE BUKA/TUTUP CHAT ---
     const chatPanel = document.getElementById('chat-panel');
@@ -314,7 +420,6 @@
             `<img src="${data.image_url}" alt="Live Chart" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block;">` 
             : '';
 
-        // Struktur HTML dengan Flexbox (Kolom Kiri untuk Chart, Kanan untuk Teks)
         reportDiv.innerHTML = `
             <div class="report-header">
                 <div style="font-size: 12px; color: #65676b; margin-bottom: 5px;">🕒 Update: ${data.timestamp}</div>
