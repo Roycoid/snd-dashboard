@@ -15,88 +15,15 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
             box-sizing: border-box;
         }
-
-        /* =========================================
-           TAMPILAN LOGIN
-           ========================================= */
-        #login-section {
-            background-color: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 350px;
-            /* Pusatkan di tengah layar */
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-        }
-        #login-section h2 { margin-bottom: 5px; color: #1877f2; }
-        #login-section p { font-size: 12px; color: #666; margin-bottom: 20px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            background-color: #f0f2f5;
-        }
-        .btn-login {
-            width: 100%;
-            padding: 12px;
-            background-color: #1877f2;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-login:hover { background-color: #166fe5; }
-        #error-msg {
-            color: red;
-            font-size: 12px;
-            margin-top: 15px;
-            font-weight: bold;
-            display: none;
-        }
-
-        /* =========================================
-           TAMPILAN DASHBOARD (Awalnya Disembunyikan)
-           ========================================= */
-        #dashboard-section {
-            display: none; /* Disembunyikan sampai login sukses */
-            max-width: 1500px; 
-            margin: 0 auto;
-            height: calc(100vh - 40px);
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Top Bar & Tombol Logout */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            background-color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid #dddfe2;
-        }
-        .top-bar h1 { margin: 0; font-size: 1.5rem; color: #1c1e21; }
-        .btn-logout { background-color: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-logout:hover { background-color: #c82333; }
-
         .dashboard-container {
+            max-width: 1500px; /* Sedikit diperlebar agar kolom kanan nyaman dibaca */
             width: 100%;
-            flex: 1;
+            height: calc(100vh - 40px);
         }
 
         /* Base Panel */
@@ -110,7 +37,7 @@
             flex-direction: column;
         }
         
-        /* Panel Kiri: Laporan */
+        /* Panel Kiri: Laporan (Sekarang Full Width & Full Height) */
         .panel-report {
             height: 100%;
             box-sizing: border-box;
@@ -162,8 +89,9 @@
         }
         
         /* =========================================
-           WIDGET CHAT MENGAMBANG
+           WIDGET CHAT MENGAMBANG (FLOATING CHAT)
            ========================================= */
+           
         #chat-toggle-btn {
             position: fixed;
             bottom: 30px;
@@ -303,258 +231,168 @@
 </head>
 <body>
 
-    <!-- KOTAK LOGIN -->
-    <div id="login-section">
-        <h2>🔒 SND AI Login</h2>
-        <p>Akses khusus administrator (Private)</p>
-        
-        <div class="input-group">
-            <input type="email" id="email" placeholder="Masukkan Email Anda">
-        </div>
-        <div class="input-group">
-            <input type="password" id="password" placeholder="Masukkan Kata Sandi">
-        </div>
-        
-        <button class="btn-login" id="btn-login">Masuk ke Dashboard</button>
-        <p id="error-msg">Akses Ditolak: Email atau sandi salah!</p>
-    </div>
-
-    <!-- AREA DASHBOARD UTAMA -->
-    <div id="dashboard-section">
-        <!-- Top Bar Baru -->
-        <div class="top-bar">
-            <h1>SND AI Trading Dashboard</h1>
-            <button class="btn-logout" id="btn-logout">Keluar (Logout)</button>
-        </div>
-
-        <div class="dashboard-container">
-            <div class="panel panel-report">
-                <h2 class="panel-title">📊 Laporan Pasar Live</h2>
-                <div id="report-container">
-                    <div id="waiting-msg" style="color: #65676b; text-align: center; margin-top: 50px;">
-                        Menunggu laporan dari MT5... Klik tombol "✨ Analisa AI" di MT5 Anda.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <button id="chat-toggle-btn">
-            <span style="font-size: 20px;">💬</span> Diskusi AI
-        </button>
-
-        <div class="panel panel-chat hidden" id="chat-panel">
-            <div class="chat-header">
-                <h2 class="panel-title">💬 Diskusi AI</h2>
-                <button id="close-chat-btn">×</button>
-            </div>
-            
-            <div id="chat-box">
-                <div style="color: #8a8d91; font-size: 11px; text-align: center; margin-bottom: 15px;">
-                    Tersinkronisasi dengan sistem SND V8.5
-                </div>
-            </div>
-            
-            <div class="chat-input-container">
-                <input type="text" id="chat-input" placeholder="Tulis pesan...">
-                <button id="send-btn">Kirim</button>
+<div class="dashboard-container">
+    <div class="panel panel-report">
+        <h2 class="panel-title">📊 Laporan Pasar Live</h2>
+        <div id="report-container">
+            <div id="waiting-msg" style="color: #65676b; text-align: center; margin-top: 50px;">
+                Menunggu laporan dari MT5... Klik tombol "✨ Analisa AI" di MT5 Anda.
             </div>
         </div>
     </div>
+</div>
+
+<button id="chat-toggle-btn">
+    <span style="font-size: 20px;">💬</span> Diskusi AI
+</button>
+
+<div class="panel panel-chat hidden" id="chat-panel">
+    <div class="chat-header">
+        <h2 class="panel-title">💬 Diskusi AI</h2>
+        <button id="close-chat-btn">×</button>
+    </div>
+    
+    <div id="chat-box">
+        <div style="color: #8a8d91; font-size: 11px; text-align: center; margin-bottom: 15px;">
+            Tersinkronisasi dengan sistem SND V8.5
+        </div>
+    </div>
+    
+    <div class="chat-input-container">
+        <input type="text" id="chat-input" placeholder="Tulis pesan...">
+        <button id="send-btn">Kirim</button>
+    </div>
+</div>
 
 <script type="module">
-    // 1. IMPORT FIREBASE LENGKAP (APP, AUTH, DATABASE)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getDatabase, ref, set, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // 2. KUNCI RAHASIA FIREBASE ANDA
+    // 1. Konfigurasi Firebase (PASTIKAN MENGISI API KEY ANDA)
     const firebaseConfig = {
-        apiKey: "AIzaSyB7pBQh1_yIBBucfiGNJqn6Kn9SrNZu7rE",
-        authDomain: "sndfinder.firebaseapp.com",
-        databaseURL: "https://sndfinder-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "sndfinder",
-        storageBucket: "sndfinder.firebasestorage.app",
-        messagingSenderId: "487128628698",
-        appId: "1:487128628698:web:b21eda0312f24af20f54e3",
-        measurementId: "G-CRXFBJGVCF"
+        apiKey: "ISI_DENGAN_API_KEY_ANDA",
+        authDomain: "sndfinder-default.firebaseapp.com",
+        databaseURL: "https://sndfinder-default-rtdb.asia-southeast1.firebasedatabase.app/",
+        projectId: "sndfinder-default"
     };
 
-    // 3. INISIALISASI
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // 4. ELEMEN UI
-    const loginSection = document.getElementById('login-section');
-    const dashboardSection = document.getElementById('dashboard-section');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const btnLogin = document.getElementById('btn-login');
-    const btnLogout = document.getElementById('btn-logout');
-    const errorMsg = document.getElementById('error-msg');
-    
-    let isDashboardInitialized = false;
+    // --- LOGIKA TOGGLE BUKA/TUTUP CHAT ---
+    const chatPanel = document.getElementById('chat-panel');
+    const toggleBtn = document.getElementById('chat-toggle-btn');
+    const closeBtn = document.getElementById('close-chat-btn');
 
-    // 5. SISTEM LOGIN OTOMATIS & PENGAMANAN
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // Jika sukses Login: Sembunyikan form login, tampilkan dashboard
-            loginSection.style.display = 'none';
-            dashboardSection.style.display = 'flex';
-            
-            // Nyalakan sistem pembaca data hanya jika user sudah sah
-            if(!isDashboardInitialized) {
-                mulaiSistemDashboard();
-                isDashboardInitialized = true;
-            }
-        } else {
-            // Jika Logout/Belum Login: Tampilkan form login
-            loginSection.style.display = 'block';
-            dashboardSection.style.display = 'none';
-        }
+    toggleBtn.addEventListener('click', () => {
+        chatPanel.classList.remove('hidden');
+        toggleBtn.style.display = 'none'; 
     });
 
-    // Event Tombol Login
-    btnLogin.addEventListener('click', () => {
-        const email = emailInput.value;
-        const password = passwordInput.value;
+    closeBtn.addEventListener('click', () => {
+        chatPanel.classList.add('hidden');
+        toggleBtn.style.display = 'flex'; 
+    });
+
+    // --- LOGIKA LAPORAN PASAR (KOLOM SAMPING-SAMPINGAN) ---
+    const reportRef = ref(db, 'market_report');
+    const reportContainer = document.getElementById("report-container");
+    let isFirstReport = true;
+
+    onChildAdded(reportRef, (snapshot) => {
+        if (isFirstReport) {
+            const waitingMsg = document.getElementById("waiting-msg");
+            if (waitingMsg) waitingMsg.remove();
+            isFirstReport = false;
+        }
+
+        const data = snapshot.val();
+        const reportDiv = document.createElement("div");
+        reportDiv.className = "report-card";
         
-        errorMsg.style.display = 'none';
-        btnLogin.innerText = 'Memeriksa...';
+        const imageHtml = data.image_url ? 
+            `<img src="${data.image_url}" alt="Live Chart" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block;">` 
+            : '';
 
-        signInWithEmailAndPassword(auth, email, password)
-            .then(() => { btnLogin.innerText = 'Masuk ke Dashboard'; })
-            .catch((error) => {
-                errorMsg.style.display = 'block';
-                errorMsg.innerText = "Akses Ditolak: Email atau sandi salah!";
-                btnLogin.innerText = 'Masuk ke Dashboard';
-            });
-    });
-
-    // Event Tombol Logout
-    btnLogout.addEventListener('click', () => {
-        signOut(auth).then(() => {
-            emailInput.value = '';
-            passwordInput.value = '';
-        });
-    });
-
-    // 6. LOGIKA UTAMA DASHBOARD ANDA (Baru berjalan setelah Login)
-    function mulaiSistemDashboard() {
-        // --- LOGIKA TOGGLE BUKA/TUTUP CHAT ---
-        const chatPanel = document.getElementById('chat-panel');
-        const toggleBtn = document.getElementById('chat-toggle-btn');
-        const closeBtn = document.getElementById('close-chat-btn');
-
-        toggleBtn.addEventListener('click', () => {
-            chatPanel.classList.remove('hidden');
-            toggleBtn.style.display = 'none'; 
-        });
-
-        closeBtn.addEventListener('click', () => {
-            chatPanel.classList.add('hidden');
-            toggleBtn.style.display = 'flex'; 
-        });
-
-        // --- LOGIKA LAPORAN PASAR ---
-        const reportRef = ref(db, 'market_report');
-        const reportContainer = document.getElementById("report-container");
-        let isFirstReport = true;
-
-        onChildAdded(reportRef, (snapshot) => {
-            if (isFirstReport) {
-                const waitingMsg = document.getElementById("waiting-msg");
-                if (waitingMsg) waitingMsg.remove();
-                isFirstReport = false;
-            }
-
-            const data = snapshot.val();
-            const reportDiv = document.createElement("div");
-            reportDiv.className = "report-card";
-            
-            const imageHtml = data.image_url ? 
-                `<img src="${data.image_url}" alt="Live Chart" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block;">` 
-                : '';
-
-            reportDiv.innerHTML = `
-                <div class="report-header">
-                    <div style="font-size: 12px; color: #65676b; margin-bottom: 5px;">🕒 Update: ${data.timestamp}</div>
-                    <div>
-                        <span class="report-symbol">Instrumen: ${data.symbol}</span> &nbsp;|&nbsp; 
-                        <span class="report-price">Harga Saat Ini: ${data.price}</span>
-                    </div>
+        // Struktur HTML dengan Flexbox (Kolom Kiri untuk Chart, Kanan untuk Teks)
+        reportDiv.innerHTML = `
+            <div class="report-header">
+                <div style="font-size: 12px; color: #65676b; margin-bottom: 5px;">🕒 Update: ${data.timestamp}</div>
+                <div>
+                    <span class="report-symbol">Instrumen: ${data.symbol}</span> &nbsp;|&nbsp; 
+                    <span class="report-price">Harga Saat Ini: ${data.price}</span>
                 </div>
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
+                ${data.image_url ? `<div style="flex: 3; min-width: 60%;">${imageHtml}</div>` : ''}
                 
-                <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
-                    ${data.image_url ? `<div style="flex: 3; min-width: 60%;">${imageHtml}</div>` : ''}
-                    
-                    <div class="report-analysis" style="flex: 1; min-width: 300px;"></div>
-                </div>
-            `;
-            
-            reportDiv.querySelector('.report-analysis').innerHTML = marked.parse(data.analysis);
-            reportContainer.prepend(reportDiv);
+                <div class="report-analysis" style="flex: 1; min-width: 300px;"></div>
+            </div>
+        `;
+        
+        reportDiv.querySelector('.report-analysis').innerHTML = marked.parse(data.analysis);
+        reportContainer.prepend(reportDiv);
+    });
+
+    // --- LOGIKA CHATBOX REAL-TIME ---
+    const chatRef = ref(db, 'discussions');
+    const triggerRef = ref(db, 'web_question');
+    const chatBox = document.getElementById("chat-box");
+    const chatInput = document.getElementById("chat-input");
+    const sendBtn = document.getElementById("send-btn");
+
+    function sendMessage() {
+        const text = chatInput.value.trim();
+        if (text === "") return;
+
+        const now = new Date();
+        const timeString = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
+        push(chatRef, {
+            sender: "Trader",
+            message: text,
+            timestamp: timeString
         });
 
-        // --- LOGIKA CHATBOX REAL-TIME ---
-        const chatRef = ref(db, 'discussions');
-        const triggerRef = ref(db, 'web_question');
-        const chatBox = document.getElementById("chat-box");
-        const chatInput = document.getElementById("chat-input");
-        const sendBtn = document.getElementById("send-btn");
-
-        function sendMessage() {
-            const text = chatInput.value.trim();
-            if (text === "") return;
-
-            const now = new Date();
-            const timeString = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-
-            push(chatRef, {
-                sender: "Trader",
-                message: text,
-                timestamp: timeString
-            });
-
-            set(triggerRef, { text: text });
-            chatInput.value = ""; 
-        }
-
-        sendBtn.addEventListener("click", sendMessage);
-        chatInput.addEventListener("keypress", function(e) {
-            if (e.key === "Enter") sendMessage();
-        });
-
-        onChildAdded(chatRef, (snapshot) => {
-            const data = snapshot.val();
-            const msgDiv = document.createElement("div");
-            
-            const isAI = data.sender === "Gemini AI";
-            const msgClass = isAI ? "ai" : "trader";
-            
-            msgDiv.className = `chat-msg ${msgClass}`;
-            
-            const bubbleDiv = document.createElement("div");
-            bubbleDiv.className = "msg-bubble";
-            
-            if (isAI) {
-                bubbleDiv.innerHTML = marked.parse(data.message);
-            } else {
-                bubbleDiv.textContent = data.message;
-            }
-            
-            msgDiv.appendChild(bubbleDiv);
-            
-            const timeDiv = document.createElement("div");
-            timeDiv.className = "msg-time";
-            timeDiv.textContent = data.timestamp;
-            msgDiv.appendChild(timeDiv);
-            
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight; 
-        });
+        set(triggerRef, { text: text });
+        chatInput.value = ""; 
     }
+
+    sendBtn.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") sendMessage();
+    });
+
+    onChildAdded(chatRef, (snapshot) => {
+        const data = snapshot.val();
+        const msgDiv = document.createElement("div");
+        
+        const isAI = data.sender === "Gemini AI";
+        const msgClass = isAI ? "ai" : "trader";
+        
+        msgDiv.className = `chat-msg ${msgClass}`;
+        
+        const bubbleDiv = document.createElement("div");
+        bubbleDiv.className = "msg-bubble";
+        
+        if (isAI) {
+            bubbleDiv.innerHTML = marked.parse(data.message);
+        } else {
+            bubbleDiv.textContent = data.message;
+        }
+        
+        msgDiv.appendChild(bubbleDiv);
+        
+        const timeDiv = document.createElement("div");
+        timeDiv.className = "msg-time";
+        timeDiv.textContent = data.timestamp;
+        msgDiv.appendChild(timeDiv);
+        
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight; 
+    });
 </script>
 
 </body>
-</html>
+</html>  
